@@ -2,10 +2,22 @@ import { Component } from 'react';
 import { ToastContainer } from 'react-toastify';
 
 import Header from 'components/Header/Header';
+import ContentInfo from './ContentInfo/ContentInfo';
+
+const INITIAL_STATE = {
+  pictures: [],
+  filter: '',
+  showFeedback: false,
+};
 
 class App extends Component {
   state = {
-    showFeedback: false,
+    ...INITIAL_STATE,
+  };
+
+  onFilterChange = filterText => {
+    console.log(filterText);
+    this.setState({ filter: filterText });
   };
 
   // showFeedback = () => {
@@ -16,7 +28,11 @@ class App extends Component {
     return (
       <>
         <div className="container">
-          <Header showFeedback={this.showFeedback} />
+          <Header
+            filterText={this.state.filter}
+            onFilterChange={this.onFilterChange}
+          />
+          <ContentInfo searchText={this.state.filter} />
           {/* {this.state.showFeedback && <Feedback />} */}
         </div>
         <ToastContainer
