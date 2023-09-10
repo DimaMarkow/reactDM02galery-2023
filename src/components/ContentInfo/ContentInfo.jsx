@@ -1,6 +1,8 @@
 import { Component } from 'react';
 import getPictures from 'services/getPictures';
 import ErrorCard from '../ErrorCard/ErrorCard';
+import ImageGalleryItem from 'components/ImageGalleryItem/ImageGalleryItem';
+import Modal from 'components/Modal/Modal';
 
 const STATUS = {
   IDLE: 'idle',
@@ -14,13 +16,14 @@ class ContentInfo extends Component {
     images: [],
     error: '',
     status: STATUS.IDLE,
+    imageDetail: '',
+    showModal: false,
   };
   async componentDidUpdate(prevProps, prevState) {
     if (prevProps.searchText !== this.props.searchText) {
       this.setState({ status: STATUS.PENDING });
       try {
         const newImages = await getPictures(this.props.searchText);
-        console.log(newImages);
         this.setState(prevstate => ({
           images: [...prevstate.images, ...newImages],
           status: STATUS.RESOLVED,
@@ -28,24 +31,22 @@ class ContentInfo extends Component {
       } catch (error) {
         this.setState({ error, status: STATUS.REJECTED });
       }
-      //  --------------------------------------------------
-      //   getPictures(this.props.searchText)
-      //     .then(response => response.json())
-      //     .then(data => {
-      //       if (data.status === 'ok')
-      //         this.setState(prevstate => ({
-      //           images: [...prevstate.images, data.hits],
-      //           status: STATUS.RESOLVED,
-      //         }));
-      //       else return Promise.reject(data.message);
-      //     })
-      //     .catch(error => {
-      //       this.setState({ error, status: STATUS.REJECTED });
-      //     });
     }
   }
+
+  showImage = ({ largeImageURL }) => {
+    this.setState({
+      imageDetail: largeImageURL,
+      showModal: true,
+    });
+  };
+
+  closeModal = () => {
+    this.setState({ showModal: false });
+  };
+
   render() {
-    const { images, error } = this.state;
+    const { showModal, imageDetail, error } = this.state;
     if (this.state.status === STATUS.PENDING)
       return (
         <div className="spinner-border" role="status">
@@ -54,12 +55,15 @@ class ContentInfo extends Component {
       );
     else if (this.state.status === STATUS.RESOLVED)
       return (
-        <ul>
-          {/* {news.map(el => {
-            return <li key={el.url}>{el.title}</li>;
-          })} */}
-          <button>Load more...</button>
-        </ul>
+        <>
+          <ImageGalleryItem
+            images={this.state.images}
+            showImage={this.showImage}
+          />
+          {showModal && (
+            <Modal imageDetail={imageDetail} closeModal={this.closeModal} />
+          )}
+        </>
       );
     else if (this.state.status === STATUS.REJECTED)
       return <ErrorCard>{error.response.data}</ErrorCard>;
