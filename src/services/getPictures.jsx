@@ -5,9 +5,10 @@ import axios from 'axios';
 const BASE_URL = 'https://pixabay.com/api';
 const API_KEY = '31955836-4f23a30b6c1dc45c2c659779e';
 
-export const getPictures = async searchText => {
+export const getPictures = async (searchText, downloadingPage) => {
+  console.log('in function', downloadingPage);
   const response = await axios.get(
-    `${BASE_URL}/?q=${searchText}&key=${API_KEY}&image_type=photo&orientation=horizontal&per_page=12`
+    `${BASE_URL}/?q=${searchText}&key=${API_KEY}&image_type=photo&orientation=horizontal&per_page=12&page=${downloadingPage}`
   );
   return response.data.hits;
 };

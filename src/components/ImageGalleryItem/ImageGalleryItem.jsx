@@ -1,5 +1,6 @@
 import { Component } from 'react';
 // import PropTypes from 'prop-types';
+import { nanoid } from 'nanoid';
 
 import css from 'components/imageFinder.module.css';
 
@@ -13,7 +14,7 @@ class ImageGalleryItem extends Component {
             {images.map(({ webformatURL, id, tags, largeImageURL }) => {
               return (
                 <li
-                  key={id}
+                  key={nanoid()}
                   className={css.ImageGalleryItem}
                   onClick={() => this.props.showImage({ largeImageURL })}
                 >
@@ -26,7 +27,7 @@ class ImageGalleryItem extends Component {
               );
             })}
           </ul>
-          <button>Load more...</button>
+          {/* <button>Load more...</button> */}
         </div>
       </>
     );
@@ -34,8 +35,3 @@ class ImageGalleryItem extends Component {
 }
 
 export default ImageGalleryItem;
-
-// Header.propTypes = {
-//   showFeedback: PropTypes.func,
-//   showContacts: PropTypes.func,
-// };

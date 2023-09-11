@@ -3,6 +3,7 @@ import getPictures from 'services/getPictures';
 import ErrorCard from '../ErrorCard/ErrorCard';
 import ImageGalleryItem from 'components/ImageGalleryItem/ImageGalleryItem';
 import Modal from 'components/Modal/Modal';
+import LoadMore from 'components/LoadMore/LoadMore';
 
 const STATUS = {
   IDLE: 'idle',
@@ -18,12 +19,25 @@ class ContentInfo extends Component {
     status: STATUS.IDLE,
     imageDetail: '',
     showModal: false,
+    page: 1,
   };
+
   async componentDidUpdate(prevProps, prevState) {
     if (prevProps.searchText !== this.props.searchText) {
+      this.setState({ page: 1, images: [] });
+      console.log(`first if state: ${this.state.page}`);
+    }
+    if (
+      prevProps.searchText !== this.props.searchText ||
+      prevState.page !== this.state.page
+    ) {
+      console.log(`second if state: ${this.state.page}`);
       this.setState({ status: STATUS.PENDING });
       try {
-        const newImages = await getPictures(this.props.searchText);
+        const newImages = await getPictures(
+          this.props.searchText,
+          this.state.page
+        );
         this.setState(prevstate => ({
           images: [...prevstate.images, ...newImages],
           status: STATUS.RESOLVED,
@@ -45,6 +59,12 @@ class ContentInfo extends Component {
     this.setState({ showModal: false });
   };
 
+  onLoadMore = () => {
+    this.setState(prevstate => ({
+      page: prevstate.page + 1,
+    }));
+  };
+
   render() {
     const { showModal, imageDetail, error } = this.state;
     if (this.state.status === STATUS.PENDING)
@@ -60,6 +80,7 @@ class ContentInfo extends Component {
             images={this.state.images}
             showImage={this.showImage}
           />
+          <LoadMore onLoadMore={this.onLoadMore} />
           {showModal && (
             <Modal imageDetail={imageDetail} closeModal={this.closeModal} />
           )}
