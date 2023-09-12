@@ -1,69 +1,40 @@
-import { Component } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
+import { createPortal } from 'react-dom';
 import css from 'components/imageFinder.module.css';
 
-class Modal extends Component {
-  state = {};
+const modalRoot = document.querySelector('#modal-root');
 
+class Modal extends React.Component {
   componentDidMount() {
-    window.addEventListener('keydown', this.handlePressESC);
+    document.addEventListener('keydown', this.closeModalOnClick);
   }
 
   componentWillUnmount() {
-    window.removeEventListener('keydown', this.handlePressESC);
+    document.removeEventListener('keydown', this.closeModalOnClick);
   }
 
-  handlePressESC = e => {
-    // if (e.code === 'Escape') this.props.closeModal();
-    this.props.closeModal();
+  closeModalOnClick = ({ target, currentTarget, code }) => {
+    if (target === currentTarget || code === 'Escape') {
+      this.props.closeModal();
+    }
   };
 
   render() {
-    const { closeModal } = this.props;
-    return (
-      <div
-        className="modal fade show"
-        style={{ display: 'block', backdropFilter: 'blur(5px)' }}
-      >
-        {/* <div className="modal-dialog"> */}
-        <div className="container">
-          <div className={css.Modal}>
-            <div className="modal-content ">
-              <div className="modal-header">
-                {/* <h5 className="modal-title"> Modal</h5> */}
-                <button
-                  type="button"
-                  className="btn-close"
-                  aria-label="Close"
-                  onClick={closeModal}
-                ></button>
-              </div>
-              <div>
-                <img
-                  src={this.props.imageDetail}
-                  className="d-block w-100"
-                  alt="..."
-                />
-              </div>
-            </div>
-          </div>
+    return createPortal(
+      <div className={css.Overlay} onClick={this.closeModalOnClick}>
+        <div className={css.Modal}>
+          <img src={this.props.imageDetail} alt="" />
         </div>
-        {/* </div> */}
-      </div>
+      </div>,
+      modalRoot
     );
-    // return (
-    //   <div id="carouselExample" className="carousel slide">
-    //     <div className="carousel-inner">
-    //       <div className="carousel-item active">
-    //         <img
-    //           src={this.props.imageDetail}
-    //           className="d-block w-100"
-    //           alt="..."
-    //         />
-    //       </div>
-    //     </div>
-    //   </div>
-    // );
   }
 }
 
 export default Modal;
+
+Modal.propTypes = {
+  imageDetail: PropTypes.string.isRequired,
+  closeModal: PropTypes.func.isRequired,
+};

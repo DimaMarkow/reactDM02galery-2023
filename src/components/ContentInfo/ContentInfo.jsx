@@ -25,13 +25,11 @@ class ContentInfo extends Component {
   async componentDidUpdate(prevProps, prevState) {
     if (prevProps.searchText !== this.props.searchText) {
       this.setState({ page: 1, images: [] });
-      console.log(`first if state: ${this.state.page}`);
     }
     if (
       prevProps.searchText !== this.props.searchText ||
       prevState.page !== this.state.page
     ) {
-      console.log(`second if state: ${this.state.page}`);
       this.setState({ status: STATUS.PENDING });
       try {
         const newImages = await getPictures(
